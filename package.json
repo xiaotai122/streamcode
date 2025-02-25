@@ -15,6 +15,7 @@
     "mime-types": "^2.1.35",
     "multer": "^1.4.5-lts.1",
     "pdfjs-dist": "^4.10.38",
+    "pinyin": "^4.0.0-alpha.2",
     "qr-image": "^3.2.0",
     "qrcode": "^1.5.4",
     "sqlite3": "^5.1.7",

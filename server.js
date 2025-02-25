@@ -1,5 +1,6 @@
 const express = require('express');
 const multer = require('multer');
+const pinyin = require('pinyin');
 const qr = require('qr-image');
 const fs = require('fs');
 const path = require('path');
@@ -22,7 +23,47 @@ const storage = multer.diskStorage({
     cb(null, 'uploads/')
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname)
+    // 转换中文文件名为拼音
+    // 确保文件名存在且为字符串类型
+    const originalName = file.originalname || 'unnamed_file';
+    const ext = path.extname(originalName) || '';
+    const baseName = path.basename(originalName, ext) || originalName;
+    
+    // 检测是否包含中文
+    const hasChinese = /[\u4e00-\u9fa5]/.test(baseName);
+    
+    // 中文转拼音处理
+    let processedName = hasChinese 
+      ? pinyin(baseName, {
+          style: pinyin.STYLE_NORMAL,
+          separator: ''
+        }).join('')
+      : baseName;
+
+    // 保留合法字符：汉字、字母、数字和下划线
+    processedName = processedName.replace(/[^\u4e00-\u9fa5a-zA-Z0-9_]/g, '_')
+                                 // 统一替换连接符为下划线并处理连续特殊字符
+                                 .replace(/[-]+/g, '_')
+                                 .replace(/_+/g, '_')
+                                 // 去除首尾特殊字符
+                                 .replace(/^_+/, '')
+                                 .replace(/_+$/, '');
+    
+    // 添加时间戳 (格式: YYMMDDHHmm)
+    const timestamp = new Date().toISOString()
+      .replace(/[-:T]/g, '')
+      .slice(2, 12); // 取10位时间戳
+    
+    // 保留原始中文前缀（过滤非法字符）
+    const originalPrefix = baseName
+      .replace(/[^\u4e00-\u9fa5a-zA-Z0-9_]/g, '_') // 保留中文、字母、数字和下划线
+      .slice(0, 20);
+    
+    // 组合最终文件名（原始中文_处理名称_时间戳.扩展名）
+    const finalName = `${originalPrefix}_${processedName.slice(0,20)}_${timestamp}${ext}`
+      .replace(/_{2,}/g, '_') // 处理连续下划线
+      .replace(/^_+|_+$/g, ''); // 去除首尾下划线
+    cb(null, finalName);
   }
 })
 

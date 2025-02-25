@@ -65,7 +65,7 @@ mkdir uploads
 ```bash
 node server.js
 ```
-4. 访问 http://localhost:3000 使用
+4. 访问 http://localhost:3001 使用
 
 ## 后续计划
 - [ ] 添加用户认证系统

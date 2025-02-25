@@ -2,8 +2,22 @@
 document.getElementById('uploadForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
+    const file = document.getElementById('fileInput').files[0];
+    
+    // 处理文件名：替换非ASCII字符，添加随机字符串
+    const originalName = file.name;
+    const sanitizedName = originalName
+      .replace(/[^\w\u4e00-\u9fa5.]/g, '_')  // 保留汉字、字母、数字、下划线和点
+      .replace(/_+/g, '_')
+      .replace(/^_|_$/g, '');
+    
+    const randomStr = Math.random().toString(36).slice(2, 8);
+    const ext = originalName.slice(originalName.lastIndexOf('.'));
+    const finalFileName = `${sanitizedName}_${randomStr}${ext}`;
+
     const formData = new FormData();
-    formData.append('file', document.getElementById('fileInput').files[0]);
+    formData.append('file', file);
+    formData.append('filename', finalFileName);
 
     try {
         const response = await fetch('/upload', {
