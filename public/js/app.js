@@ -1,80 +1,84 @@
-// 初始化DOM元素
-const fileInput = document.getElementById('fileInput');
-const dropZone = document.getElementById('dropZone');
-const statusInfo = document.getElementById('statusInfo');
-const qrcodeBox = document.getElementById('qrcodeBox');
-const qrcodeImage = document.getElementById('qrcodeImage');
-
-// 文件拖放功能
-dropZone.addEventListener('dragover', (e) => {
+// 处理表单提交
+document.getElementById('uploadForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    dropZone.style.borderColor = '#2196F3';
-});
-
-dropZone.addEventListener('dragleave', () => {
-    dropZone.style.borderColor = '#ccc';
-});
-
-dropZone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropZone.style.borderColor = '#ccc';
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-        handleFile(files[0]);
-    }
-});
-
-// 文件选择功能
-fileInput.addEventListener('change', (e) => {
-    if (e.target.files.length > 0) {
-        handleFile(e.target.files[0]);
-    }
-});
-
-// 处理文件上传
-async function handleFile(file) {
-    statusInfo.className = 'status-info info';
-    statusInfo.textContent = '文件上传中...';
-
+    
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', document.getElementById('fileInput').files[0]);
 
     try {
         const response = await fetch('/upload', {
             method: 'POST',
             body: formData
         });
-        
-        const result = await response.json();
-        
-        if (response.ok) {
-            // 显示二维码
-            qrcodeImage.src = result.qrCode;
-            qrcodeBox.classList.remove('hidden');
-            statusInfo.className = 'status-info success';
-            statusInfo.textContent = `上传成功：${result.filename}`;
+        const data = await response.json();
+
+        if (data.success) {
+            // 显示结果区域
+            document.getElementById('result').classList.remove('hidden');
             
-            // 保存文件URL到二维码图片元素
-            qrcodeImage.dataset.url = result.fileUrl;
-        } else {
-            showError(result.error || '上传失败');
+            // 显示文件名
+            document.getElementById('fileName').textContent = data.filename;
+            
+            // 显示二维码
+            const qrImg = document.createElement('img');
+            qrImg.src = data.qrCode;
+            document.getElementById('qrcode').innerHTML = '';
+            document.getElementById('qrcode').appendChild(qrImg);
+            
+            // 设置下载链接
+            document.getElementById('downloadLink').href = `/download/${data.filename}`;
         }
     } catch (err) {
-        showError('网络连接错误');
+        alert('上传失败: ' + err.message);
     }
-}
+});
 
-// 复制文件链接功能
-function copyFileUrl() {
-    const url = qrcodeImage.dataset.url;
-    navigator.clipboard.writeText(url)
-        .then(() => alert('链接已复制到剪贴板'))
-        .catch(() => alert('复制失败，请手动复制链接'));
-}
+// 复制链接功能（增强版）
+document.getElementById('copyButton').addEventListener('click', async () => {
+    const fileName = document.getElementById('fileName').textContent;
+    if (!fileName) {
+        alert('请先上传文件');
+        return;
+    }
+    
+    const link = `${window.location.origin}/download/${encodeURIComponent(fileName)}`;
+    
+    try {
+        // 尝试现代剪贴板API
+        await navigator.clipboard.writeText(link);
+        showToast('链接已复制到剪贴板', 'success');
+    } catch (err) {
+        console.error('现代剪贴板API失败:', err);
+        // 降级方案：使用execCommand
+        const textArea = document.createElement('textarea');
+        textArea.value = link;
+        document.body.appendChild(textArea);
+        textArea.select();
+        
+        try {
+            const success = document.execCommand('copy');
+            if (!success) throw new Error('execCommand失败');
+            showToast('链接已复制到剪贴板', 'success');
+        } catch (err) {
+            console.error('降级复制方案失败:', err);
+            showToast('复制失败，请手动复制链接', 'error');
+            // 自动选中链接文本方便用户手动复制
+            textArea.select();
+        } finally {
+            document.body.removeChild(textArea);
+        }
+    }
+});
 
-// 显示错误信息
-function showError(message) {
-    statusInfo.className = 'status-info error';
-    statusInfo.textContent = message;
-    qrcodeBox.classList.add('hidden');
+// 显示状态提示
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
 }

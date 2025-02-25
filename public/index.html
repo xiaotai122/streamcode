@@ -2,45 +2,31 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文件上传与二维码生成系统</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <title>文件共享系统</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>文件上传与二维码生成系统</h1>
+        <h1>文件共享系统</h1>
         
-        <!-- 文件上传区域 -->
-        <div class="upload-box" id="dropZone">
-            <p>拖放文件到此区域 或</p>
-            <button onclick="document.getElementById('fileInput').click()">选择文件</button>
-            <input type="file" id="fileInput" hidden>
-        </div>
+        <!-- 文件上传表单 -->
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" id="fileInput" name="file" required>
+            <button type="submit">上传文件</button>
+        </form>
 
-        <!-- 上传状态提示 -->
-        <div class="status-info info" id="statusInfo">
-            等待文件上传...
-        </div>
-
-        <!-- 二维码显示区域 -->
-        <div class="qrcode-box hidden" id="qrcodeBox">
-            <h3>文件访问二维码</h3>
-            <img id="qrcodeImage" src="" alt="二维码">
-            <button class="copy-btn" onclick="copyFileUrl()">复制文件链接</button>
-        </div>
-
-        <!-- 使用说明 -->
-        <div class="instructions">
-            <h2>使用说明</h2>
-            <ul>
-                <li>支持所有类型的文件上传（最大100MB）</li>
-                <li>音视频文件扫描后可直接播放</li>
-                <li>Office文档支持在线预览</li>
-                <li>二维码永久有效，可随时分享</li>
-            </ul>
+        <!-- 上传结果展示 -->
+        <div id="result" class="hidden">
+            <h3>上传成功！</h3>
+            <p>文件名：<span id="fileName"></span></p>
+            <div id="qrcode"></div>
+            <div class="actions">
+                <button class="btn" id="copyButton" onclick="copyLink()">复制链接</button>
+                <a id="downloadLink" target="_blank"><button>直接下载</button></a>
+            </div>
         </div>
     </div>
 
-    <script src="/js/app.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>

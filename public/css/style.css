@@ -1,10 +1,9 @@
 /* 基础样式 */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
+    font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
-    background-color: #f5f5f5;
+    background-color: #f0f0f0;
 }
 
 .container {
@@ -12,136 +11,88 @@ body {
     margin: 0 auto;
     background: white;
     padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-h1 {
-    color: #2196F3;
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-/* 上传区域样式 */
-.upload-box {
-    border: 2px dashed #ccc;
     border-radius: 8px;
-    padding: 40px;
-    text-align: center;
-    margin-bottom: 20px;
-    transition: border-color 0.3s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.upload-box p {
-    color: #666;
-    margin: 0 0 15px 0;
+/* 上传表单样式 */
+#uploadForm {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
 }
 
-.upload-box button {
-    background: #2196F3;
+#fileInput {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+button {
+    padding: 8px 16px;
+    background: #007bff;
     color: white;
     border: none;
-    padding: 10px 25px;
-    border-radius: 5px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
-    transition: background 0.3s;
 }
 
-.upload-box button:hover {
-    background: #1976D2;
+button:hover {
+    background: #0056b3;
 }
 
-/* 状态提示样式 */
-.status-info {
-    padding: 15px;
-    border-radius: 5px;
-    margin: 15px 0;
-    text-align: center;
-}
-
-.status-info.info {
-    background: #e3f2fd;
-    color: #0d47a1;
-}
-
-.status-info.success {
-    background: #e8f5e9;
-    color: #2e7d32;
-}
-
-.status-info.error {
-    background: #ffebee;
-    color: #c62828;
-}
-
-/* 二维码区域样式 */
-.qrcode-box {
-    text-align: center;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    margin-top: 20px;
-}
-
-.qrcode-box.hidden {
+/* 结果展示区 */
+.hidden {
     display: none;
 }
 
-.qrcode-box img {
-    width: 200px;
-    height: 200px;
-    margin: 15px auto;
-    display: block;
+#result {
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
 }
 
-.copy-btn {
+#qrcode {
+    margin: 20px 0;
+    text-align: center;
+}
+
+#qrcode img {
+    max-width: 200px;
+    height: auto;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+/* Toast提示样式 */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 14px;
+    z-index: 1000;
+    opacity: 0.95;
+}
+
+.toast.success {
     background: #4CAF50;
     color: white;
-    border: none;
-    padding: 8px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 10px;
 }
 
-.copy-btn:hover {
-    background: #45a049;
+.toast.error {
+    background: #f44336;
+    color: white;
 }
 
-/* 使用说明样式 */
-.instructions {
-    margin-top: 30px;
-    padding: 20px;
-    background: #fff8e1;
-    border-radius: 8px;
-}
-
-.instructions h2 {
-    color: #ff9800;
-    margin-top: 0;
-}
-
-.instructions ul {
-    padding-left: 20px;
-}
-
-.instructions li {
-    margin-bottom: 8px;
-}
-
-/* 响应式设计 */
-@media (max-width: 600px) {
-    .container {
-        padding: 15px;
-    }
-    
-    .upload-box {
-        padding: 20px;
-    }
-    
-    .qrcode-box img {
-        width: 150px;
-        height: 150px;
-    }
+.toast.info {
+    background: #2196F3;
+    color: white;
 }
